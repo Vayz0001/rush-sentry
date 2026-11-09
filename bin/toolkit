@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# toolkit — rush-sentry entrypoint.
+# One CLI, subcommands, machine-readable output. Contract is frozen after 1.0:
+# additive changes only; exit-code meanings never change.
+#
+# Exit codes:  0 ok · 1 error · 2 auth · 3 input/validation · 4 confirm-required
+set -euo pipefail
+
+VERSION="0.0.1"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PROG="toolkit"
+
+# stdout = machine channel; stderr = human/errors.
+err()  { printf '%s\n' "$*" >&2; }
+die()  { err "error: $*"; exit 1; }
+# JSON error on stderr for agents; $1=code string $2=message
+jerr() { printf '{"error":%s,"code":%s}\n' "$(jq -Rn --arg m "$2" '$m')" "$(jq -Rn --arg c "$1" '$c')" >&2; }
+
+usage() {
+  cat <<EOF
+$PROG $VERSION — rush-sentry BYOCli security toolkit
+
+USAGE:
+  $PROG <command> [options]
+
+COMMANDS:
+  scan <tool|all>    Run security scanners (secrets|deps|sast|iac|supply-chain|all)
+                     --target <path>   path to scan (default: .)
+                     --format <fmt>    sarif|json  (default: sarif)
+  lab <action>       Manage the isolated vulnerable-app lab (up|down|status|verify)
+  notify <action>    Threat-intel: run|test  (CISA KEV ∩ deps -> webhook)
+  manifest           Print scanners/MANIFEST.json (the machine-readable catalog)
+  version            Print version
+  help               Show this help
+
+Defensive / authorized use only. See AGENTS.md and SECURITY.md.
+Unknown commands hard-fail (no fuzzy matching) so an agent can't act on a guess.
+EOF
+}
+
+cmd_scan() {
+  local tool="${1:-}"; shift || true
+  [[ -n "$tool" ]] || { jerr "input" "scan requires a tool: secrets|deps|sast|iac|supply-chain|all"; exit 3; }
+  local target="." format="sarif"
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --target) target="${2:?--target needs a value}"; shift 2;;
+      --format) format="${2:?--format needs a value}"; shift 2;;
+      *) jerr "input" "unknown flag: $1"; exit 3;;
+    esac
+  done
+  [[ -d "$target" || -f "$target" ]] || { jerr "input" "target not found: $target"; exit 3; }
+  local runner="$ROOT/scanners/$tool/run.sh"
+  if [[ "$tool" == "all" ]]; then
+    err "[$PROG] scan all: Phase 1 wires the per-tool runners; not yet implemented."
+    exit 1
+  fi
+  [[ -x "$runner" ]] || { jerr "input" "unknown or unwired tool: $tool"; exit 3; }
+  exec "$runner" --target "$target" --format "$format"
+}
+
+cmd_lab() {
+  local action="${1:-}"
+  local compose="$ROOT/lab/docker-compose.yml"
+  case "$action" in
+    up|down|status|verify)
+      [[ -f "$compose" ]] || { err "[$PROG] lab: Phase 3 adds $compose; not yet implemented."; exit 1; }
+      err "[$PROG] lab $action: runner lands in Phase 3."; exit 1;;
+    *) jerr "input" "lab needs an action: up|down|status|verify"; exit 3;;
+  esac
+}
+
+cmd_notify() {
+  local action="${1:-}"
+  case "$action" in
+    run|test) err "[$PROG] notify $action: threat-intel lands in Phase 4."; exit 1;;
+    *) jerr "input" "notify needs an action: run|test"; exit 3;;
+  esac
+}
+
+main() {
+  local cmd="${1:-help}"; shift || true
+  case "$cmd" in
+    scan)     cmd_scan "$@";;
+    lab)      cmd_lab "$@";;
+    notify)   cmd_notify "$@";;
+    manifest) cat "$ROOT/scanners/MANIFEST.json";;
+    version|--version|-V) printf '%s %s\n' "$PROG" "$VERSION";;
+    help|--help|-h) usage;;
+    *) jerr "input" "unknown command: $cmd (try '$PROG help')"; exit 3;;
+  esac
+}
+main "$@"

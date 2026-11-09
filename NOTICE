@@ -1,0 +1,6 @@
+rush-sentry
+Copyright 2026 Rush Labs
+
+This product wraps third-party open-source security scanners which are invoked
+as external tools and retain their own licenses. It is for defensive, authorized
+use only.

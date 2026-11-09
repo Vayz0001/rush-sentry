@@ -1,0 +1,23 @@
+# secrets / local config
+.env
+*.env
+notify/state/*
+!notify/state/.gitkeep
+*.webhook
+
+# scanner outputs / reports
+/reports/
+*.sarif
+*.sarif.json
+.trivycache/
+
+# cross-agent shims created by setup.sh (symlinks, not committed)
+/.claude/
+/.agents/
+/.omp/
+
+# os / editor
+.DS_Store
+*.swp
+__pycache__/
+*.pyc

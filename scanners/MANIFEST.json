@@ -1,0 +1,24 @@
+{
+  "schema": "rush-sentry/manifest@1",
+  "description": "Machine-readable catalog of scanners the toolkit wraps. An agent reads this to know what tools exist, how to invoke them, their output format, and exit codes. Populated in Phase 1.",
+  "exit_codes": {
+    "0": "ok",
+    "1": "error",
+    "2": "auth",
+    "3": "input/validation",
+    "4": "confirm-required"
+  },
+  "output": {
+    "findings_format": "sarif-2.1.0",
+    "also_available": "native per-tool json",
+    "stdout": "machine channel (json/sarif when not a tty)",
+    "stderr": "human/errors (json error object with code+message)"
+  },
+  "tools": [
+    {"key": "secrets",       "status": "planned", "wraps": ["gitleaks", "trufflehog(verified)"], "run": "scanners/secrets/run.sh",       "note": "git history + diff; trufflehog optional deep/verified audit"},
+    {"key": "deps",          "status": "planned", "wraps": ["osv-scanner", "trivy"],            "run": "scanners/deps/run.sh",          "note": "dependency + CVE scanning"},
+    {"key": "sast",          "status": "planned", "wraps": ["semgrep", "bandit", "gosec"],      "run": "scanners/sast/run.sh",          "note": "static analysis; language-specific linters layered in"},
+    {"key": "iac",           "status": "planned", "wraps": ["trivy-config", "hadolint"],        "run": "scanners/iac/run.sh",           "note": "IaC + Dockerfile misconfig"},
+    {"key": "supply-chain",  "status": "planned", "wraps": ["scorecard", "syft"],               "run": "scanners/supply-chain/run.sh",  "note": "repo health score + SBOM"}
+  ]
+}
