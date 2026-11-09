@@ -24,7 +24,7 @@ USAGE:
   $PROG <command> [options]
 
 COMMANDS:
-  scan <tool|all>    Run security scanners (secrets|deps|sast|iac|supply-chain|all)
+  scan <tool|all>    Run security scanners (secrets|deps|sast|iac|ci|sbom|all)
                      --target <path>   path to scan (default: .)
                      --format <fmt>    sarif|json  (default: sarif)
   lab <action>       Manage the isolated vulnerable-app lab (up|down|status|verify)
@@ -39,11 +39,11 @@ EOF
 }
 
 # Tools that make up "scan all", in order.
-SCAN_ALL="secrets deps sast iac"
+SCAN_ALL="secrets deps sast iac ci"
 
 cmd_scan() {
   local tool="${1:-}"; shift || true
-  [[ -n "$tool" ]] || { jerr "input" "scan requires a tool: $SCAN_ALL supply-chain all"; exit 3; }
+  [[ -n "$tool" ]] || { jerr "input" "scan requires a tool: $SCAN_ALL sbom all"; exit 3; }
   local target="." format="sarif"
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -87,6 +87,14 @@ scan_all() {
   else
     # shellcheck disable=SC2016  # literal $schema in JSON, intentional
     printf '{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[]}\n' > "$merged"
+  fi
+  # Enrich the merged report: add security-severity bands + dedup fingerprints.
+  if [[ -f "$ROOT/scanners/lib/enrich_sarif.py" ]]; then
+    if python3 "$ROOT/scanners/lib/enrich_sarif.py" < "$merged" > "$merged.tmp" 2>/dev/null; then
+      mv "$merged.tmp" "$merged"
+    else
+      rm -f "$merged.tmp"
+    fi
   fi
   # Summary to stderr.
   local total; total=$(jq '[.runs[].results[]?] | length' "$merged")

@@ -1,6 +1,6 @@
 {
   "schema": "rush-sentry/manifest@1",
-  "description": "Machine-readable catalog of scanners the toolkit wraps. An agent reads this to know what tools exist, how to invoke them, their output format, and exit codes. Populated in Phase 1.",
+  "description": "Machine-readable catalog of scanners the toolkit wraps. An agent reads this to know what tools exist, how to invoke them, their output format, and exit codes.",
   "exit_codes": {
     "0": "ok",
     "1": "error",
@@ -10,61 +10,54 @@
   },
   "output": {
     "findings_format": "sarif-2.1.0",
+    "enrichment": "combined.sarif is post-processed with security-severity bands (GitHub crit/high/med/low) and partialFingerprints for dedup/baselines",
     "also_available": "native per-tool json",
     "stdout": "machine channel (json/sarif when not a tty)",
     "stderr": "human/errors (json error object with code+message)"
   },
+  "scan_all": ["secrets", "deps", "sast", "iac", "ci"],
   "tools": [
     {
       "key": "secrets",
       "status": "active",
-      "wraps": [
-        "gitleaks",
-        "trufflehog(verified)"
-      ],
+      "wraps": ["gitleaks"],
       "run": "scanners/secrets/run.sh",
-      "note": "git history + diff; trufflehog optional deep/verified audit"
+      "note": "scans the working tree AND full git history (set RS_GIT_HISTORY=0 to skip history); honors an optional .gitleaks.toml allowlist/baseline"
     },
     {
       "key": "deps",
       "status": "active",
-      "wraps": [
-        "osv-scanner",
-        "trivy"
-      ],
+      "wraps": ["trivy"],
       "run": "scanners/deps/run.sh",
-      "note": "dependency + CVE scanning"
+      "note": "dependency + CVE scanning (trivy fs)"
     },
     {
       "key": "sast",
       "status": "active",
-      "wraps": [
-        "semgrep",
-        "bandit",
-        "gosec"
-      ],
+      "wraps": ["opengrep"],
       "run": "scanners/sast/run.sh",
-      "note": "static analysis; language-specific linters layered in"
+      "note": "static analysis via Opengrep (LGPL-2.1 fork of the Semgrep OSS engine; no account/telemetry). Image built locally from scanners/sast/Dockerfile. Ruleset overridable via RS_OPENGREP_CONFIG (default p/default; registry rulesets are third-party licensed)"
     },
     {
       "key": "iac",
       "status": "active",
-      "wraps": [
-        "trivy-config",
-        "hadolint"
-      ],
+      "wraps": ["trivy-config"],
       "run": "scanners/iac/run.sh",
-      "note": "IaC + Dockerfile misconfig"
+      "note": "IaC + Dockerfile misconfiguration (trivy config)"
     },
     {
-      "key": "supply-chain",
-      "status": "planned",
-      "wraps": [
-        "scorecard",
-        "syft"
-      ],
-      "run": "scanners/supply-chain/run.sh",
-      "note": "repo health score + SBOM"
+      "key": "ci",
+      "status": "active",
+      "wraps": ["zizmor"],
+      "run": "scanners/ci/run.sh",
+      "note": "GitHub Actions security audit (template injection, unpinned actions, over-broad GITHUB_TOKEN, credential persistence). Runs offline; scans .github/workflows"
+    },
+    {
+      "key": "sbom",
+      "status": "active",
+      "wraps": ["syft"],
+      "run": "scanners/sbom/run.sh",
+      "note": "Software Bill of Materials (SPDX-JSON by default; set RS_SBOM_FORMAT). An inventory artifact, NOT SARIF findings, so it is standalone and not part of `scan all`"
     }
   ]
 }

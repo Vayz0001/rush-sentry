@@ -15,7 +15,7 @@ jobs:
       security-events: write  # only this job needs to write findings
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with: { fetch-depth: 0 }   # full history for secret scanning
+        with: { fetch-depth: 0, persist-credentials: false }   # full history for secret scanning
       - name: run toolkit scan all
         run: |
           chmod +x bin/toolkit
