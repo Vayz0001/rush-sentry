@@ -1,0 +1,41 @@
+name: release
+# On a version tag: build a deterministic source tarball + SHA256SUMS, sign build
+# provenance with GitHub Artifact Attestations (keyless Sigstore -> SLSA Build L3),
+# and publish a GitHub release. Verify with:
+#   gh attestation verify rush-sentry-<ver>.tar.gz --repo Vayz0001/rush-sentry
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # create the GitHub release
+      id-token: write        # keyless signing (Sigstore)
+      attestations: write    # record the provenance attestation
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: build deterministic release artifact
+        run: |
+          v="${GITHUB_REF_NAME}"
+          tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner \
+            --exclude-vcs --exclude='./reports' --exclude='./notify/state' \
+            --exclude='./rush-sentry-*.tar.gz' \
+            -czf "/tmp/rush-sentry-${v}.tar.gz" .
+          mv "/tmp/rush-sentry-${v}.tar.gz" .
+          sha256sum "rush-sentry-${v}.tar.gz" | tee SHA256SUMS
+      - name: attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: "rush-sentry-*.tar.gz"
+      - name: publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            rush-sentry-*.tar.gz SHA256SUMS \
+            --title "${GITHUB_REF_NAME}" --generate-notes

@@ -1,6 +1,7 @@
 # rush-sentry
 
 [![ci](https://github.com/Vayz0001/rush-sentry/actions/workflows/ci.yml/badge.svg)](https://github.com/Vayz0001/rush-sentry/actions/workflows/ci.yml)
+[![codeql](https://github.com/Vayz0001/rush-sentry/actions/workflows/codeql.yml/badge.svg)](https://github.com/Vayz0001/rush-sentry/actions/workflows/codeql.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Vayz0001/rush-sentry/badge)](https://scorecard.dev/viewer/?uri=github.com/Vayz0001/rush-sentry)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
