@@ -8,7 +8,8 @@ rs_need_docker
 
 IMG="${RS_IMG_TRIVY:-aquasec/trivy:latest}"
 RS_NET=bridge
-CACHE="${RS_TRIVY_CACHE:-$ROOT/.trivycache}"
+# Cache lives OUTSIDE the repo so scanners never scan the (large) vuln DB.
+CACHE="${RS_TRIVY_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/rush-sentry/trivy}"
 mkdir -p "$CACHE"
 
 docker run --rm --network "$RS_NET" \
