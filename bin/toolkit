@@ -6,7 +6,7 @@
 # Exit codes:  0 ok · 1 error · 2 auth · 3 input/validation · 4 confirm-required
 set -euo pipefail
 
-VERSION="0.0.1"
+VERSION="0.1.0"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PROG="toolkit"
 
