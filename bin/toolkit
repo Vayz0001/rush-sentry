@@ -38,9 +38,12 @@ Unknown commands hard-fail (no fuzzy matching) so an agent can't act on a guess.
 EOF
 }
 
+# Tools that make up "scan all", in order.
+SCAN_ALL="secrets deps sast iac"
+
 cmd_scan() {
   local tool="${1:-}"; shift || true
-  [[ -n "$tool" ]] || { jerr "input" "scan requires a tool: secrets|deps|sast|iac|supply-chain|all"; exit 3; }
+  [[ -n "$tool" ]] || { jerr "input" "scan requires a tool: $SCAN_ALL supply-chain all"; exit 3; }
   local target="." format="sarif"
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -50,13 +53,45 @@ cmd_scan() {
     esac
   done
   [[ -d "$target" || -f "$target" ]] || { jerr "input" "target not found: $target"; exit 3; }
+
+  if [[ "$tool" == "all" ]]; then scan_all "$target" "$format"; return; fi
+
   local runner="$ROOT/scanners/$tool/run.sh"
-  if [[ "$tool" == "all" ]]; then
-    err "[$PROG] scan all: Phase 1 wires the per-tool runners; not yet implemented."
-    exit 1
-  fi
   [[ -x "$runner" ]] || { jerr "input" "unknown or unwired tool: $tool"; exit 3; }
   exec "$runner" --target "$target" --format "$format"
+}
+
+# Run every scanner, save each SARIF, merge into one, print combined to stdout
+# and a human summary to stderr.
+scan_all() {
+  local target="$1" format="$2"
+  local outdir="$ROOT/reports"; mkdir -p "$outdir"
+  local merged="$outdir/combined.sarif" t rc
+  local -a ok=() failed=()
+  for t in $SCAN_ALL; do
+    local runner="$ROOT/scanners/$t/run.sh"
+    [[ -x "$runner" ]] || { failed+=("$t:unwired"); continue; }
+    err "[$PROG] scanning: $t ..."
+    if "$runner" --target "$target" --format sarif > "$outdir/$t.sarif" 2> "$outdir/$t.err"; then
+      ok+=("$t")
+    else
+      rc=$?; failed+=("$t:exit$rc")
+      err "[$PROG]   $t failed (exit $rc) — see reports/$t.err"
+    fi
+  done
+  # Merge valid SARIF files (skip empties) into one multi-run document.
+  local -a files=()
+  for t in "${ok[@]:-}"; do [[ -s "$outdir/$t.sarif" ]] && files+=("$outdir/$t.sarif"); done
+  if [[ ${#files[@]} -gt 0 ]]; then
+    jq -s 'reduce .[] as $f ({ "$schema":"https://json.schemastore.org/sarif-2.1.0.json", version:"2.1.0", runs:[] }; .runs += ($f.runs // [])) ' "${files[@]}" > "$merged"
+  else
+    printf '{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[]}\n' > "$merged"
+  fi
+  # Summary to stderr.
+  local total; total=$(jq '[.runs[].results[]?] | length' "$merged")
+  err "[$PROG] scan all complete — ran: ${ok[*]:-none}; failed: ${failed[*]:-none}; findings: $total"
+  err "[$PROG] combined report: $merged"
+  cat "$merged"
 }
 
 cmd_lab() {

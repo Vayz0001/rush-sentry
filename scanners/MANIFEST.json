@@ -15,10 +15,56 @@
     "stderr": "human/errors (json error object with code+message)"
   },
   "tools": [
-    {"key": "secrets",       "status": "planned", "wraps": ["gitleaks", "trufflehog(verified)"], "run": "scanners/secrets/run.sh",       "note": "git history + diff; trufflehog optional deep/verified audit"},
-    {"key": "deps",          "status": "planned", "wraps": ["osv-scanner", "trivy"],            "run": "scanners/deps/run.sh",          "note": "dependency + CVE scanning"},
-    {"key": "sast",          "status": "planned", "wraps": ["semgrep", "bandit", "gosec"],      "run": "scanners/sast/run.sh",          "note": "static analysis; language-specific linters layered in"},
-    {"key": "iac",           "status": "planned", "wraps": ["trivy-config", "hadolint"],        "run": "scanners/iac/run.sh",           "note": "IaC + Dockerfile misconfig"},
-    {"key": "supply-chain",  "status": "planned", "wraps": ["scorecard", "syft"],               "run": "scanners/supply-chain/run.sh",  "note": "repo health score + SBOM"}
+    {
+      "key": "secrets",
+      "status": "active",
+      "wraps": [
+        "gitleaks",
+        "trufflehog(verified)"
+      ],
+      "run": "scanners/secrets/run.sh",
+      "note": "git history + diff; trufflehog optional deep/verified audit"
+    },
+    {
+      "key": "deps",
+      "status": "active",
+      "wraps": [
+        "osv-scanner",
+        "trivy"
+      ],
+      "run": "scanners/deps/run.sh",
+      "note": "dependency + CVE scanning"
+    },
+    {
+      "key": "sast",
+      "status": "active",
+      "wraps": [
+        "semgrep",
+        "bandit",
+        "gosec"
+      ],
+      "run": "scanners/sast/run.sh",
+      "note": "static analysis; language-specific linters layered in"
+    },
+    {
+      "key": "iac",
+      "status": "active",
+      "wraps": [
+        "trivy-config",
+        "hadolint"
+      ],
+      "run": "scanners/iac/run.sh",
+      "note": "IaC + Dockerfile misconfig"
+    },
+    {
+      "key": "supply-chain",
+      "status": "planned",
+      "wraps": [
+        "scorecard",
+        "syft"
+      ],
+      "run": "scanners/supply-chain/run.sh",
+      "note": "repo health score + SBOM"
+    }
   ]
 }
