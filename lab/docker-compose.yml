@@ -1,0 +1,45 @@
+# rush-sentry lab — isolated, intentionally-vulnerable web targets.
+# ⛔ DO NOT EXPOSE. Network is internal:true (no route off-box); UIs are bound to
+# 127.0.0.1 only. A reverse shell/payload in a target cannot phone home or pivot.
+# Verify after every up:  ./bin/toolkit lab verify   (must report BLOCKED)
+
+networks:
+  labnet:
+    name: rush_sentry_labnet
+    driver: bridge
+    internal: true          # <-- the airgap: no gateway/NAT to host or internet
+
+services:
+  juice-shop:               # OWASP Juice Shop — modern OWASP Top 10
+    image: bkimminich/juice-shop:latest
+    networks: [labnet]
+    ports: ["127.0.0.1:3000:3000"]
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 768m
+    cpus: 1.0
+    restart: unless-stopped
+
+  dvwa:                     # Damn Vulnerable Web App (official, all-in-one w/ db)
+    image: ghcr.io/digininja/dvwa:latest
+    networks: [labnet]
+    ports: ["127.0.0.1:8080:80"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 300
+    mem_limit: 768m
+    cpus: 1.0
+    restart: unless-stopped
+
+  vampi:                    # VAmPI — vulnerable REST API (BOLA/auth practice)
+    image: erev0s/vampi:latest
+    networks: [labnet]
+    ports: ["127.0.0.1:5000:5000"]
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 256m
+    cpus: 0.5
+    restart: unless-stopped
