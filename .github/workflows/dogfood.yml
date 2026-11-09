@@ -22,7 +22,24 @@ jobs:
           ./setup.sh || true
           ./bin/toolkit scan all --target . --format sarif > combined.sarif || true
           test -s combined.sarif
+      - name: summarize findings
+        if: always()
+        run: |
+          echo "### rush-sentry dogfood scan" >> "$GITHUB_STEP_SUMMARY"
+          if [ -s combined.sarif ]; then
+            jq -r '.runs[] | "- **\(.tool.driver.name)**: \([.results[]] | length) finding(s)"' combined.sarif >> "$GITHUB_STEP_SUMMARY" || true
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "_Total: $(jq '[.runs[].results[]] | length' combined.sarif) finding(s)._" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No SARIF produced." >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: upload SARIF to code scanning
+        # Code scanning writes to the Security tab, which is free on PUBLIC repos
+        # but needs GitHub Advanced Security on private ones. Skip cleanly while
+        # private; this activates automatically when the repo is flipped public.
+        # continue-on-error guards scheduled runs where repo visibility is unknown.
+        if: ${{ !github.event.repository.private }}
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@df409f7d9260372bd5f19e5b04e83cb3c43714ae # v3.27.9
         with:
           sarif_file: combined.sarif
