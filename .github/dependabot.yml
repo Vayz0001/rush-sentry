@@ -5,6 +5,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7        # batch/settle updates before opening PRs
     commit-message:
       prefix: "ci"
     labels: ["dependencies", "github-actions"]

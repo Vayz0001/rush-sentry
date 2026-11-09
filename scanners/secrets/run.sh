@@ -14,9 +14,13 @@ IMG="${RS_IMG_GITLEAKS:-ghcr.io/gitleaks/gitleaks:latest}"
 TMP_OUT="$(mktemp -d)"
 trap 'rm -rf "$TMP_OUT"' EXIT
 
+# If the target ships a .gitleaks.toml, honor it (allowlists/baselines live there).
+conf_args=()
+[[ -f "$TARGET/.gitleaks.toml" ]] && conf_args=(-c /src/.gitleaks.toml)
+
 docker run --rm --network none \
   -v "$TARGET:/src:ro" -v "$TMP_OUT:/out" \
-  "$IMG" dir /src --no-banner \
+  "$IMG" dir /src --no-banner "${conf_args[@]}" \
   --report-format sarif --report-path /out/gitleaks.sarif --exit-code 0 \
   >/dev/null 2>&1 || true
 

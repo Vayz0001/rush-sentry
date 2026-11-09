@@ -1,0 +1,27 @@
+# rush-sentry gitleaks config. Extends the built-in ruleset and adds narrow,
+# documented allowlists so our own hardening doesn't trip the secret scanner.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "SHA-pinned GitHub Actions (40-hex commit pins look like tokens)"
+# Workflow files reference secrets only via ${{ secrets.* }}, never literals, so
+# allowlisting the action-pin pattern is safe and removes false positives.
+# regexTarget = "line" so we match the whole `uses: owner/repo@<sha>` line, not
+# just the captured 40-hex value (gitleaks matches the secret by default).
+regexTarget = "line"
+regexes = [
+  '''uses:\s*[A-Za-z0-9._\-]+/[A-Za-z0-9._\-/]+@[0-9a-f]{40}''',
+]
+
+[[allowlists]]
+description = "Intentionally-vulnerable lab uses dummy/default creds by design"
+paths = [
+  '''lab/.*''',
+]
+
+[[allowlists]]
+description = "Derived scan output (SARIF snippets echo scanned content; not source)"
+paths = [
+  '''reports/.*''',
+]
