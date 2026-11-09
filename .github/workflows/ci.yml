@@ -17,6 +17,11 @@ jobs:
           shellcheck bin/toolkit bin/lib/common.sh scanners/*/run.sh setup.sh
       - name: python syntax
         run: python3 -m py_compile notify/watch.py
+      - name: unit tests
+        run: |
+          python3 -m venv /tmp/venv
+          /tmp/venv/bin/pip install --quiet pytest
+          /tmp/venv/bin/pytest tests/ -q
       - name: validate compose
         run: docker compose -f lab/docker-compose.yml config -q
       - name: toolkit smoke

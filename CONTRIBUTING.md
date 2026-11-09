@@ -21,13 +21,15 @@ keep contributions aligned with authorized, lawful use.
 ```bash
 ./setup.sh                 # wire cross-agent shims
 pipx install pre-commit && pre-commit install
+make test                  # run unit tests (pytest)
 ./bin/toolkit scan all --target . --format sarif | jq .runs   # dogfood
 ```
 
 ## Submitting
 
 1. Branch from `main`; keep PRs focused.
-2. `pre-commit run --all-files` must pass (shellcheck, gitleaks, yaml/json).
+2. `pre-commit run --all-files` and `make test` must pass (shellcheck,
+   gitleaks, yaml/json, and the pytest unit tests).
 3. New scanner wrappers: add a `scanners/<tool>/run.sh` that emits SARIF, register
    it in `scanners/MANIFEST.json`, and keep it runnable via Docker with the target
    mounted read-only.

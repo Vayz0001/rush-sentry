@@ -20,7 +20,7 @@ notify: ## Run threat-intel cross-reference + webhook
 	./bin/toolkit notify run
 
 test: ## Run wrapper/script unit tests
-	@echo "no tests yet"
+	@python3 -c "import pytest" 2>/dev/null && python3 -m pytest tests/ -q || echo "pytest not installed: pip install pytest"
 
 lint: ## Lint shell + python
 	@command -v shellcheck >/dev/null && shellcheck bin/toolkit scanners/*/run.sh 2>/dev/null || echo "shellcheck not installed"
