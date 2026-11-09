@@ -6,13 +6,15 @@ on:
   pull_request: { branches: [main] }
   schedule: [{ cron: "23 6 * * 1" }]   # weekly, odd minute
 permissions:
-  contents: read
-  security-events: write
+  contents: read            # least privilege at top level
 jobs:
   scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write  # only this job needs to write findings
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with: { fetch-depth: 0 }   # full history for secret scanning
       - name: run toolkit scan all
         run: |
@@ -21,7 +23,7 @@ jobs:
           ./bin/toolkit scan all --target . --format sarif > combined.sarif || true
           test -s combined.sarif
       - name: upload SARIF to code scanning
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@df409f7d9260372bd5f19e5b04e83cb3c43714ae # v3.27.9
         with:
           sarif_file: combined.sarif
           category: rush-sentry

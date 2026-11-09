@@ -27,7 +27,12 @@ vulnerabilities don't generate false findings against this repo.
 ## Reporting a vulnerability
 
 If you find a security issue **in rush-sentry itself** (not in the intentionally
-vulnerable lab), please report it privately via GitHub Security Advisories
+vulnerable lab), please report it privately via **GitHub Security Advisories**
 ("Report a vulnerability" on the repo's Security tab) rather than opening a public
-issue. We aim to acknowledge within a few days and to coordinate disclosure on a
-~90-day timeline.
+issue.
+
+- **Initial response:** we aim to acknowledge your report within **3 business
+  days** (and always within 14 days).
+- **Disclosure:** we coordinate a fix and public disclosure on a **~90-day**
+  timeline, crediting the reporter unless you prefer otherwise.
+- Please do not publicly disclose the issue until we've had a chance to address it.
