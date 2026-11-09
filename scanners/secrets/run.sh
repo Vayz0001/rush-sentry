@@ -12,6 +12,7 @@ rs_parse "$@"
 rs_need_docker
 
 IMG="${RS_IMG_GITLEAKS:-ghcr.io/gitleaks/gitleaks:latest}"
+# shellcheck disable=SC2016  # $schema is a literal JSON key, not a shell var
 EMPTY='{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"gitleaks","informationUri":"https://github.com/gitleaks/gitleaks"}},"results":[]}]}'
 
 TMP_OUT="$(mktemp -d)"

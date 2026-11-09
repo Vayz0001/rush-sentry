@@ -10,6 +10,7 @@ source "$ROOT/bin/lib/common.sh"
 rs_parse "$@"
 
 IMG="${RS_IMG_ZIZMOR:-ghcr.io/zizmorcore/zizmor:latest}"
+# shellcheck disable=SC2016  # $schema is a literal JSON key, not a shell var
 EMPTY='{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"zizmor","informationUri":"https://github.com/zizmorcore/zizmor"}},"results":[]}]}'
 
 # Nothing to audit if the target has no workflows.

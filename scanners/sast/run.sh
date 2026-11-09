@@ -13,6 +13,7 @@ rs_need_docker
 
 IMG="${RS_IMG_OPENGREP:-rush-sentry/opengrep:local}"
 CONFIG="${RS_OPENGREP_CONFIG:-p/default}"
+# shellcheck disable=SC2016  # $schema is a literal JSON key, not a shell var
 EMPTY='{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"opengrep","informationUri":"https://github.com/opengrep/opengrep"}},"results":[]}]}'
 
 # Build the pinned image on first use (idempotent; fast once cached).
