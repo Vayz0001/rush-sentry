@@ -1,21 +1,42 @@
 # rush-sentry lab — isolated, intentionally-vulnerable web targets.
-# ⛔ DO NOT EXPOSE. Network is internal:true (no route off-box); UIs are bound to
-# 127.0.0.1 only. A reverse shell/payload in a target cannot phone home or pivot.
-# Verify after every up:  ./bin/toolkit lab verify   (must report BLOCKED)
+# ⛔ DO NOT EXPOSE.
+#
+# Design: the vulnerable targets sit on `labnet` (internal:true) with NO outbound
+# route — a reverse shell/payload in a target cannot phone home or pivot. A thin
+# nginx `gateway` straddles labnet + a normal `edge` network and is the ONLY way
+# the host reaches the targets (loopback-published). The gateway runs no
+# vulnerable code. Verify after every up:  ./bin/toolkit lab verify  (-> BLOCKED)
 
 networks:
-  labnet:
+  labnet:                   # airgapped: targets live here, no internet
     name: rush_sentry_labnet
     driver: bridge
-    internal: true          # <-- the airgap: no gateway/NAT to host or internet
+    internal: true
+  edge:                     # normal bridge, ONLY the gateway attaches (for publish)
+    name: rush_sentry_edge
+    driver: bridge
 
 services:
+  gateway:                  # thin TCP forwarder host<->targets (no app logic)
+    image: nginx:alpine
+    networks: [labnet, edge]
+    ports:
+      - "127.0.0.1:3000:3000"   # -> juice-shop
+      - "127.0.0.1:8080:8080"   # -> dvwa
+      - "127.0.0.1:5000:5000"   # -> vampi
+    volumes:
+      - ./gateway.nginx.conf:/etc/nginx/nginx.conf:ro
+    cap_drop: ["ALL"]
+    cap_add: ["CHOWN", "SETUID", "SETGID", "DAC_OVERRIDE"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 100
+    mem_limit: 64m
+    restart: unless-stopped
+    depends_on: [juice-shop, dvwa, vampi]
+
   juice-shop:               # OWASP Juice Shop — modern OWASP Top 10
     image: bkimminich/juice-shop:latest
     networks: [labnet]
-    ports: ["127.0.0.1:3000:3000"]
-    read_only: true
-    tmpfs: ["/tmp"]
     cap_drop: ["ALL"]
     security_opt: ["no-new-privileges:true"]
     pids_limit: 200
@@ -26,7 +47,6 @@ services:
   dvwa:                     # Damn Vulnerable Web App (official, all-in-one w/ db)
     image: ghcr.io/digininja/dvwa:latest
     networks: [labnet]
-    ports: ["127.0.0.1:8080:80"]
     security_opt: ["no-new-privileges:true"]
     pids_limit: 300
     mem_limit: 768m
@@ -36,7 +56,6 @@ services:
   vampi:                    # VAmPI — vulnerable REST API (BOLA/auth practice)
     image: erev0s/vampi:latest
     networks: [labnet]
-    ports: ["127.0.0.1:5000:5000"]
     cap_drop: ["ALL"]
     security_opt: ["no-new-privileges:true"]
     pids_limit: 200
