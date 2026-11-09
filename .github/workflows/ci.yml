@@ -1,0 +1,25 @@
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y shellcheck
+          shellcheck bin/toolkit bin/lib/common.sh scanners/*/run.sh setup.sh
+      - name: python syntax
+        run: python3 -m py_compile notify/watch.py
+      - name: validate compose
+        run: docker compose -f lab/docker-compose.yml config -q
+      - name: toolkit smoke
+        run: |
+          chmod +x bin/toolkit
+          ./bin/toolkit version
+          ./bin/toolkit help >/dev/null
+          ./bin/toolkit manifest | python3 -c 'import json,sys; json.load(sys.stdin)'

@@ -1,5 +1,9 @@
 # rush-sentry
 
+[![ci](https://github.com/Vayz0001/rush-sentry/actions/workflows/ci.yml/badge.svg)](https://github.com/Vayz0001/rush-sentry/actions/workflows/ci.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Vayz0001/rush-sentry/badge)](https://scorecard.dev/viewer/?uri=github.com/Vayz0001/rush-sentry)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 > **Defensive / authorized use only.** rush-sentry scans code you own and tests
 > only deliberately-vulnerable practice targets you run yourself, assets you own,
 > or systems you have **explicit written permission** to test. You are solely
@@ -43,7 +47,14 @@ omp (Oh My Pi), and Gemini/Antigravity via the open `AGENTS.md` + Agent Skills
 
 ## Status
 
-🚧 Early build — see [docs/methodology.md](docs/methodology.md) for the roadmap.
+Working across all five pillars (scan · lab · skills · notify · docs). See
+[docs/methodology.md](docs/methodology.md) for the roadmap and how an agent drives
+it end to end.
+
+- **scan** — `toolkit scan all` runs secrets/deps/sast/iac → one merged SARIF
+- **lab** — `toolkit lab up` → isolated, airgapped Juice Shop / DVWA / VAmPI
+- **notify** — `toolkit notify run` → CISA KEV ∩ your deps → Discord/Slack
+- **skills** — `run-scan`, `triage-findings` packs for your agent CLI
 
 ## License
 

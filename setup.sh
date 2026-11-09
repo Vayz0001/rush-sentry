@@ -4,7 +4,6 @@
 # Safe to re-run (idempotent). Creates symlinks only; nothing here is committed.
 set -euo pipefail
 cd "$(dirname "$0")"
-ROOT="$(pwd)"
 
 link() { # link <target> <linkname>
   local target="$1" name="$2"

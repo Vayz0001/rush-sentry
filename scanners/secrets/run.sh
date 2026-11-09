@@ -23,5 +23,6 @@ docker run --rm --network none \
 if [[ -s "$TMP_OUT/gitleaks.sarif" ]] && jq -e . "$TMP_OUT/gitleaks.sarif" >/dev/null 2>&1; then
   cat "$TMP_OUT/gitleaks.sarif"
 else
+  # shellcheck disable=SC2016  # literal $schema in JSON, intentional
   printf '{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"gitleaks","informationUri":"https://github.com/gitleaks/gitleaks"}},"results":[]}]}\n'
 fi

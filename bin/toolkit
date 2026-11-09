@@ -85,6 +85,7 @@ scan_all() {
   if [[ ${#files[@]} -gt 0 ]]; then
     jq -s 'reduce .[] as $f ({ "$schema":"https://json.schemastore.org/sarif-2.1.0.json", version:"2.1.0", runs:[] }; .runs += ($f.runs // [])) ' "${files[@]}" > "$merged"
   else
+    # shellcheck disable=SC2016  # literal $schema in JSON, intentional
     printf '{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[]}\n' > "$merged"
   fi
   # Summary to stderr.

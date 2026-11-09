@@ -1,0 +1,27 @@
+name: dogfood
+# Run rush-sentry's own scanners against rush-sentry and publish findings to the
+# Security tab. The best proof a security tool works is that it scans itself.
+on:
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
+  schedule: [{ cron: "23 6 * * 1" }]   # weekly, odd minute
+permissions:
+  contents: read
+  security-events: write
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }   # full history for secret scanning
+      - name: run toolkit scan all
+        run: |
+          chmod +x bin/toolkit
+          ./setup.sh || true
+          ./bin/toolkit scan all --target . --format sarif > combined.sarif || true
+          test -s combined.sarif
+      - name: upload SARIF to code scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: combined.sarif
+          category: rush-sentry

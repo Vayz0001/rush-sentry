@@ -1,0 +1,3 @@
+# The lab is intentionally vulnerable and uses dummy/default creds by design.
+# Any "secret" found under lab/ is a planted default, not a leak.
+lab/

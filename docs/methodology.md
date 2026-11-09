@@ -22,9 +22,12 @@ The AI reasoning is **yours** (BYOCli). The repo stays deterministic and auditab
 ## Roadmap
 
 - [x] **Phase 0** — repo skeleton, license, AGENTS.md, cross-agent shims, `toolkit` CLI contract
-- [ ] **Phase 1** — scanner core: wire gitleaks / osv-scanner / trivy / semgrep /
-      hadolint / scorecard / syft → unified SARIF report + MANIFEST
-- [ ] **Phase 2** — skill packs: `run-scan`, `triage-findings`
-- [ ] **Phase 3** — isolated Docker lab + `spin-up-lab` / `web-pentest` skills + WSTG playbooks
-- [ ] **Phase 4** — threat-intel: KEV/OSV/NVD ∩ deps → Discord/Slack + `threat-intel-digest`
-- [ ] **Phase 5** — OSS polish: Scorecard badge, signed releases, CI dogfooding, optional MCP server
+- [x] **Phase 1** — scanner core: secrets (gitleaks) / deps (trivy) / sast (semgrep) /
+      iac (trivy config) → unified SARIF via `scan all` + MANIFEST
+- [x] **Phase 2** — skill packs: `run-scan`, `triage-findings`
+- [x] **Phase 3** — isolated airgapped Docker lab (Juice Shop / DVWA / VAmPI) + `toolkit lab`
+- [x] **Phase 4** — threat-intel: CISA KEV ∩ deps → Discord/Slack webhook + box-cron
+- [x] **Phase 5** — OSS polish: CI + dogfood + Scorecard workflows, pre-commit, badges, CONTRIBUTING
+- [ ] **Later** — more scanners (osv-scanner, hadolint, scorecard CLI, syft/SBOM), WSTG
+      playbooks under `docs/playbooks/`, signed releases (SLSA/cosign), optional MCP server,
+      hash-pin GitHub Actions to commit SHAs

@@ -1,0 +1,20 @@
+name: threat-intel
+# BACKUP scheduler for the KEV watcher. Box cron (notify/crontab.example) is the
+# primary/reliable one; GitHub Actions cron is best-effort. Needs repo secret
+# RUSH_SENTRY_WEBHOOK to actually post (without it, the run just prints and passes).
+on:
+  schedule: [{ cron: "17 8 * * *" }]   # daily, odd minute
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: KEV ∩ deps -> webhook
+        env:
+          RUSH_SENTRY_WEBHOOK: ${{ secrets.RUSH_SENTRY_WEBHOOK }}
+        run: |
+          chmod +x bin/toolkit
+          ./bin/toolkit notify run --target .
