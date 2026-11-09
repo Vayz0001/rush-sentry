@@ -28,6 +28,9 @@ COMMANDS:
                      --target <path>   path to scan (default: .)
                      --format <fmt>    sarif|json  (default: sarif)
   lab <action>       Manage the isolated vulnerable-app lab (up|down|status|verify)
+                     up --attacker     also pre-pull the attacker toolbox
+  lab attack <tool>  Run an airgapped attacker tool against the lab
+                     (nuclei|httpx|katana|ffuf|sqlmap|schemathesis|zap) -- <args>
   notify <action>    Threat-intel: run|test  (CISA KEV ∩ deps -> webhook)
   manifest           Print scanners/MANIFEST.json (the machine-readable catalog)
   version            Print version
@@ -108,13 +111,16 @@ LAB_PROJECT="rush-sentry-lab"
 LAB_NET="rush_sentry_labnet"
 
 cmd_lab() {
-  local action="${1:-}"
+  local action="${1:-}"; shift || true
   [[ -f "$LAB_COMPOSE" ]] || { jerr error "lab compose not found: $LAB_COMPOSE" 1; }
   command -v docker >/dev/null || jerr error "docker is required" 1
   local -a dc=(docker compose -p "$LAB_PROJECT" -f "$LAB_COMPOSE")
   case "$action" in
     up)
       err "[$PROG] lab: pulling + starting targets (first run pulls images, be patient) ..."
+      if [[ "${1:-}" == "--attacker" ]]; then
+        err "[$PROG] pre-pulling attacker toolbox images ..."; "${dc[@]}" --profile attacker pull >&2 || true
+      fi
       "${dc[@]}" up -d >&2
       lab_verify
       err "[$PROG] lab up. Targets (loopback only):"
@@ -125,7 +131,14 @@ cmd_lab() {
     down)   "${dc[@]}" down >&2; err "[$PROG] lab down.";;
     status) "${dc[@]}" ps;;
     verify) lab_verify;;
-    *) jerr input "lab needs an action: up|down|status|verify" 3;;
+    attack)
+      local tool="${1:-}"; shift || true
+      [[ -n "$tool" ]] || { jerr input "lab attack needs a tool + args: nuclei|httpx|katana|ffuf|sqlmap|schemathesis|zap -- <args>" 3; return 3; }
+      err "[$PROG] ⚔️  Attacker toolbox: airgapped to the bundled lab (no internet route)."
+      err "[$PROG]     Authorized/defensive use only. Targets: juice-shop:3000 · dvwa · vampi:5000"
+      "${dc[@]}" --profile attacker run --rm "$tool" "$@"
+      ;;
+    *) jerr input "lab needs an action: up|down|status|verify|attack" 3;;
   esac
 }
 

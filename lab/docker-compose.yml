@@ -6,6 +6,11 @@
 # nginx `gateway` straddles labnet + a normal `edge` network and is the ONLY way
 # the host reaches the targets (loopback-published). The gateway runs no
 # vulnerable code. Verify after every up:  ./bin/toolkit lab verify  (-> BLOCKED)
+#
+# The ATTACKER TOOLBOX (profile "attacker", off by default) attaches ONLY to
+# labnet — the tools can reach the targets by service name but have NO route to
+# the internet or host, so the airgap itself scopes them to the lab. Authorized
+# / defensive use only. Run via:  ./bin/toolkit lab attack <tool> [args...]
 
 networks:
   labnet:                   # airgapped: targets live here, no internet
@@ -62,3 +67,72 @@ services:
     mem_limit: 256m
     cpus: 0.5
     restart: unless-stopped
+
+  # ======================= ATTACKER TOOLBOX (profile: attacker) ==============
+  # Off by default. labnet-only (airgapped). Run-on-demand, not long-running.
+  # Reach targets by service name: http://juice-shop:3000, http://dvwa,
+  # http://vampi:5000. Official upstream images except ffuf/sqlmap (community,
+  # pinned by tag — see lab/README.md). Invoke: ./bin/toolkit lab attack <tool> …
+
+  nuclei:                   # template-based DAST / CVE + misconfig scanner (MIT)
+    image: projectdiscovery/nuclei:latest
+    profiles: ["attacker"]
+    networks: [labnet]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 300
+    mem_limit: 768m
+    entrypoint: ["nuclei"]
+
+  httpx:                    # fast live-host / tech-detection probe (MIT)
+    image: projectdiscovery/httpx:latest
+    profiles: ["attacker"]
+    networks: [labnet]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 256m
+    entrypoint: ["httpx"]
+
+  katana:                   # JS-aware crawler for SPAs like Juice Shop (MIT)
+    image: projectdiscovery/katana:latest
+    profiles: ["attacker"]
+    networks: [labnet]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 512m
+    entrypoint: ["katana"]
+
+  ffuf:                     # web fuzzer / content discovery (MIT; community image)
+    image: secsi/ffuf:latest
+    profiles: ["attacker"]
+    networks: [labnet]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 256m
+    entrypoint: ["ffuf"]
+
+  sqlmap:                   # automated SQLi detection/exploitation (GPL; community)
+    image: secsi/sqlmap:latest
+    profiles: ["attacker"]
+    networks: [labnet]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 512m
+    entrypoint: ["sqlmap"]
+
+  schemathesis:             # property-based API testing from OpenAPI (MIT)
+    image: schemathesis/schemathesis:stable
+    profiles: ["attacker"]
+    networks: [labnet]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 512m
+    entrypoint: ["schemathesis"]
+
+  zap:                      # OWASP ZAP full DAST (Apache-2.0)
+    image: ghcr.io/zaproxy/zaproxy:stable
+    profiles: ["attacker"]
+    networks: [labnet]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 500
+    mem_limit: 2g
+    entrypoint: ["zap.sh"]

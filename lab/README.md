@@ -29,3 +29,26 @@ natively (no emulation).
   `no-new-privileges: true`, `read_only`+`tmpfs` where possible, mem/cpu/pids limits
 - **verify the airgap after every `up`**: from inside a target,
   `wget -T3 https://example.com` must FAIL (blocked = good)
+
+## Attacker toolbox (profile: `attacker`, off by default)
+
+The lab ships an optional set of pentest tools as `--profile attacker` services,
+attached **only to the airgapped `labnet`** — they can reach the targets by service
+name (`http://juice-shop:3000`, `http://dvwa`, `http://vampi:5000`) but have **no
+route to the internet or host**, so the network itself scopes them to the lab.
+
+```
+./bin/toolkit lab up --attacker        # start targets + pre-pull the toolbox
+./bin/toolkit lab attack httpx  -u http://juice-shop:3000 -title -tech-detect
+./bin/toolkit lab attack nuclei -u http://vampi:5000 -severity critical,high
+./bin/toolkit lab attack zap    zap-baseline.py -t http://juice-shop:3000
+```
+
+Tools (images): `nuclei` `httpx` `katana` (projectdiscovery, MIT) · `ffuf`
+`sqlmap` (community `secsi/*`, pinned) · `schemathesis` (MIT) · `zap`
+(`ghcr.io/zaproxy/zaproxy`, Apache-2.0). GPL tools (sqlmap) run as separate
+containers and are never vendored, so the repo stays Apache-2.0.
+
+Workflows live in `skills/*/SKILL.md` (each with an authorization gate) and
+target playbooks in `docs/playbooks/`. Method: `docs/METHODOLOGY.md`.
+**Authorized / defensive use only.**
