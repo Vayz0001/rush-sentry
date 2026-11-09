@@ -136,10 +136,14 @@ lab_verify() {
 }
 
 cmd_notify() {
-  local action="${1:-}"
+  local action="${1:-}"; shift || true
+  local watcher="$ROOT/notify/watch.py"
+  [[ -f "$watcher" ]] || { jerr error "notify watcher missing: $watcher" 1; }
+  command -v python3 >/dev/null || jerr error "python3 is required" 1
   case "$action" in
-    run|test) err "[$PROG] notify $action: threat-intel lands in Phase 4."; exit 1;;
-    *) jerr "input" "notify needs an action: run|test"; exit 3;;
+    run)  exec python3 "$watcher" "$@";;          # --target, --dry-run passthrough
+    test) exec python3 "$watcher" --test;;
+    *) jerr input "notify needs an action: run|test (run takes --target PATH, --dry-run)" 3;;
   esac
 }
 

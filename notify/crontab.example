@@ -1,0 +1,9 @@
+# rush-sentry threat-intel — box cron (primary, reliable scheduler).
+# Install:  crontab -e   and add a line like below (adjust the path + target).
+# Runs daily at 08:17 (odd minute avoids the top-of-hour thundering herd),
+# cross-references the target's deps against CISA KEV, posts matches to the webhook.
+#
+# 17 8 * * *  cd /data/rush-sentry && ./bin/toolkit notify run --target /path/to/your/repo >> notify/state/cron.log 2>&1
+#
+# A GitHub Actions schedule (.github/workflows/threat-intel.yml) can act as a
+# backup, but Actions cron is best-effort (can skip/auto-disable) — prefer box cron.
