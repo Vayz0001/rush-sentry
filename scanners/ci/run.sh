@@ -24,14 +24,16 @@ rs_need_docker
 TMP_OUT="$(mktemp -d)"
 trap 'rm -rf "$TMP_OUT"' EXIT
 
+rc=0
 docker run --rm --network none \
   -v "$TARGET:/src:ro" \
   "$IMG" --format sarif --offline --persona regular /src/.github/workflows \
-  >"$TMP_OUT/ci.sarif" 2>/dev/null || true
+  >"$TMP_OUT/ci.sarif" 2>/dev/null || rc=$?
 
+# zizmor exits non-zero when it FINDS issues too, so trust a valid SARIF file;
+# only "no valid output" is a real error -> fail closed.
 if [[ -s "$TMP_OUT/ci.sarif" ]] && jq -e . "$TMP_OUT/ci.sarif" >/dev/null 2>&1; then
   cat "$TMP_OUT/ci.sarif"
 else
-  # shellcheck disable=SC2016
-  printf '%s\n' "$EMPTY"
+  rs_err error "zizmor produced no valid SARIF (exit $rc)" 1
 fi

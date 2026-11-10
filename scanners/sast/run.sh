@@ -13,8 +13,6 @@ rs_need_docker
 
 IMG="${RS_IMG_OPENGREP:-rush-sentry/opengrep:local}"
 CONFIG="${RS_OPENGREP_CONFIG:-p/default}"
-# shellcheck disable=SC2016  # $schema is a literal JSON key, not a shell var
-EMPTY='{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"opengrep","informationUri":"https://github.com/opengrep/opengrep"}},"results":[]}]}'
 
 # Build the pinned image on first use (idempotent; fast once cached).
 if ! docker image inspect "$IMG" >/dev/null 2>&1; then
@@ -24,14 +22,16 @@ fi
 TMP_OUT="$(mktemp -d)"
 trap 'rm -rf "$TMP_OUT"' EXIT
 
+rc=0
 docker run --rm --network "${RS_NET:-bridge}" \
   -v "$TARGET:/src:ro" -v "$TMP_OUT:/out" \
   "$IMG" scan --config "$CONFIG" --sarif-output=/out/sast.sarif --quiet /src \
-  >/dev/null 2>&1 || true
+  >/dev/null 2>&1 || rc=$?
 
+# A valid SARIF file means opengrep ran (exit 1 just signals findings). No
+# valid file means a real error, so fail closed instead of emitting "all clear".
 if [[ -s "$TMP_OUT/sast.sarif" ]] && jq -e . "$TMP_OUT/sast.sarif" >/dev/null 2>&1; then
   cat "$TMP_OUT/sast.sarif"
 else
-  # shellcheck disable=SC2016
-  printf '%s\n' "$EMPTY"
+  rs_err error "opengrep produced no valid SARIF (exit $rc)" 1
 fi
