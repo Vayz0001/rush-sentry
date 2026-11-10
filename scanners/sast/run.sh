@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sast — opengrep (LGPL-2.1 fork of the Semgrep OSS engine). SARIF to stdout.
+# sast - opengrep (LGPL-2.1 fork of the Semgrep OSS engine). SARIF to stdout.
 # Opengrep removes the Semgrep account/telemetry/registry-ToS that attach to the
 # upstream engine, keeping rush-sentry cleanly Apache-2.0. Rulesets fetched via
 # --config are third-party licensed and overridable with RS_OPENGREP_CONFIG.

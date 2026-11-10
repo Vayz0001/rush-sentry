@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# setup.sh — wire cross-agent compatibility shims so one source of truth
+# setup.sh - wire cross-agent compatibility shims so one source of truth
 # (AGENTS.md + skills/) serves Claude Code, Codex, omp, and Gemini/Antigravity.
 # Safe to re-run (idempotent). Creates symlinks only; nothing here is committed.
 set -euo pipefail

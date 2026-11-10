@@ -1,6 +1,6 @@
 # Contributing to rush-sentry
 
-Thanks for your interest! rush-sentry is a **defensive** security toolkit — please
+Thanks for your interest! rush-sentry is a **defensive** security toolkit - please
 keep contributions aligned with authorized, lawful use.
 
 ## Ground rules
@@ -8,11 +8,11 @@ keep contributions aligned with authorized, lawful use.
 - **Defensive/authorized use only.** Don't add features whose primary purpose is
   attacking systems without authorization, mass exploitation, or evasion for
   malicious use. The `lab/` targets are intentionally vulnerable and must stay
-  isolated (internal network, loopback only) — see `lab/README.md`.
+  isolated (internal network, loopback only) - see `lab/README.md`.
 - **BYOCli.** The tool must not embed an LLM/provider integration or require API
   keys. Intelligence is the user's own agent CLI; we ship deterministic tools +
   skill packs (`AGENTS.md`, `skills/*/SKILL.md`).
-- **Output contract is frozen after 1.0.** Additive changes only — never rename
+- **Output contract is frozen after 1.0.** Additive changes only - never rename
   or remove commands, flags, JSON fields, or change exit-code meanings. Findings
   are SARIF 2.1.0.
 
@@ -35,6 +35,13 @@ make test                  # run unit tests (pytest)
    mounted read-only.
 4. Describe what you changed and how you tested it.
 
+## Testing policy
+
+When you add or change functionality, add or update tests in `tests/` that
+cover it, and make sure `make test` passes. Pure logic (SARIF enrichment, the
+threat-intel classification and parsing) has unit tests; scanner wrappers are
+exercised by the dogfood self-scan in CI.
+
 ## Reporting security issues
 
-See [SECURITY.md](SECURITY.md) — private disclosure via GitHub Security Advisories.
+See [SECURITY.md](SECURITY.md) - private disclosure via GitHub Security Advisories.

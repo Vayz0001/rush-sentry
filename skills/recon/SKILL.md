@@ -1,11 +1,11 @@
 ---
 name: recon
-description: Map a lab web target's surface — live endpoints, tech stack, hidden content — with httpx, katana, and ffuf before deeper testing.
+description: Map a lab web target's surface - live endpoints, tech stack, hidden content - with httpx, katana, and ffuf before deeper testing.
 ---
 
 # Recon & content discovery
 
-> ⚠️ **AUTHORIZATION GATE — read before running.** These tools are for the
+> ⚠️ **AUTHORIZATION GATE - read before running.** These tools are for the
 > **bundled rush-sentry lab** (airgapped, intentionally vulnerable) or a target the
 > user has **explicitly confirmed** they own or are authorized to test (signed
 > engagement / in-scope bug bounty). If the target is not a lab service and the
@@ -28,12 +28,12 @@ Targets on labnet: `http://juice-shop:3000` · `http://dvwa` · `http://vampi:50
    ```
    ./bin/toolkit lab attack httpx -u http://juice-shop:3000 -title -tech-detect -status-code
    ```
-2. **Crawl the app** — katana is JS-aware, so it finds SPA routes a classic
+2. **Crawl the app** - katana is JS-aware, so it finds SPA routes a classic
    dir-buster misses (ideal for Juice Shop's Angular front end):
    ```
    ./bin/toolkit lab attack katana -u http://juice-shop:3000 -jc -d 3
    ```
-3. **Content discovery** (ffuf) — needs a wordlist mounted into the container;
+3. **Content discovery** (ffuf) - needs a wordlist mounted into the container;
    point FUZZ at the path you want to brute-force:
    ```
    ./bin/toolkit lab attack ffuf -u http://juice-shop:3000/FUZZ -w /wordlist.txt -mc 200,301,302

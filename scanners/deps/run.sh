@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# deps — trivy filesystem scan (vulnerable dependencies / CVEs). SARIF to stdout.
+# deps - trivy filesystem scan (vulnerable dependencies / CVEs). SARIF to stdout.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 source "$ROOT/bin/lib/common.sh"

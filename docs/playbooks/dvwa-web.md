@@ -1,4 +1,4 @@
-# Playbook — DVWA (web, by security level)
+# Playbook - DVWA (web, by security level)
 
 **Target:** `http://dvwa` (host: `http://127.0.0.1:8080`, login `admin`/`password`)
 **Authorization:** bundled lab only. See docs/METHODOLOGY.md § Scope.
@@ -17,5 +17,5 @@ the DB on first use; grab your `PHPSESSID` + `security` cookies for the tools.
 | CSRF | forge a password-change request | manual | WSTG-SESS-05 |
 | Brute Force | login brute force | ffuf / hydra | WSTG-ATHN-03 |
 
-**The lesson:** every attack that works at *low* should fail at *impossible* —
+**The lesson:** every attack that works at *low* should fail at *impossible* -
 inspect "View Source" to see why (parameterized queries, escaping, tokens).

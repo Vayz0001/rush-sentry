@@ -13,7 +13,7 @@ rush-sentry is a defensive security toolkit. It is intended **only** for:
 Using this tool to access, scan, probe, or attack systems you do not own and are
 not authorized to test may be **illegal** (e.g. CFAA in the US, the Computer
 Misuse Act in the UK, and equivalents elsewhere). **You are solely responsible
-for your use of this software.** The authors accept no liability — see
+for your use of this software.** The authors accept no liability - see
 [LICENSE](LICENSE).
 
 ## The lab is intentionally vulnerable
@@ -27,9 +27,10 @@ vulnerabilities don't generate false findings against this repo.
 ## Reporting a vulnerability
 
 If you find a security issue **in rush-sentry itself** (not in the intentionally
-vulnerable lab), please report it privately via **GitHub Private Vulnerability Reporting** — the
-"Report a vulnerability" button on the repo's **Security** tab (enabled for this
-repo) — rather than opening a public issue. This opens a private advisory thread
+vulnerable lab), please report it privately via **GitHub Private Vulnerability Reporting** - the
+"Report a vulnerability" button at
+<https://github.com/Vayz0001/rush-sentry/security/advisories/new> on the repo's **Security** tab (enabled for this
+repo) - rather than opening a public issue. This opens a private advisory thread
 with the maintainer.
 
 - **Initial response:** we aim to acknowledge your report within **3 business

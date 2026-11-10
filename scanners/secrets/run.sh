@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# secrets — gitleaks. Scans the working tree (dir mode) AND, when the target is a
-# git repo, its full commit history (git mode) — because secrets are usually
+# secrets - gitleaks. Scans the working tree (dir mode) AND, when the target is a
+# git repo, its full commit history (git mode) - because secrets are usually
 # buried in old commits, which a working-tree-only scan misses entirely. Results
 # from both passes are merged and deduped into one SARIF run on stdout. Honors an
 # optional .gitleaks.toml (allowlists/baselines). History mode: set RS_GIT_HISTORY=0

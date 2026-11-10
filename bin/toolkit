@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# toolkit — rush-sentry entrypoint.
+# toolkit - rush-sentry entrypoint.
 # One CLI, subcommands, machine-readable output. Contract is frozen after 1.0:
 # additive changes only; exit-code meanings never change.
 #
@@ -18,7 +18,7 @@ jerr() { printf '{"error":%s,"code":%s}\n' "$(jq -Rn --arg m "$2" '$m')" "$(jq -
 
 usage() {
   cat <<EOF
-$PROG $VERSION — rush-sentry BYOCli security toolkit
+$PROG $VERSION - rush-sentry BYOCli security toolkit
 
 USAGE:
   $PROG <command> [options]
@@ -79,7 +79,7 @@ scan_all() {
       ok+=("$t")
     else
       rc=$?; failed+=("$t:exit$rc")
-      err "[$PROG]   $t failed (exit $rc) — see reports/$t.err"
+      err "[$PROG]   $t failed (exit $rc) - see reports/$t.err"
     fi
   done
   # Merge valid SARIF files (skip empties) into one multi-run document.
@@ -101,7 +101,7 @@ scan_all() {
   fi
   # Summary to stderr.
   local total; total=$(jq '[.runs[].results[]?] | length' "$merged")
-  err "[$PROG] scan all complete — ran: ${ok[*]:-none}; failed: ${failed[*]:-none}; findings: $total"
+  err "[$PROG] scan all complete - ran: ${ok[*]:-none}; failed: ${failed[*]:-none}; findings: $total"
   err "[$PROG] combined report: $merged"
   cat "$merged"
 }
@@ -143,7 +143,7 @@ cmd_lab() {
 }
 
 # Prove the airgap: a throwaway container on the lab network must NOT reach the
-# internet. Reports BLOCKED (good) or LEAK (bad — stop and fix isolation).
+# internet. Reports BLOCKED (good) or LEAK (bad - stop and fix isolation).
 lab_verify() {
   docker network inspect "$LAB_NET" >/dev/null 2>&1 || { err "[$PROG] lab network not up yet."; return 0; }
   local res
@@ -152,7 +152,7 @@ lab_verify() {
   if [[ "$res" == "BLOCKED" ]]; then
     err "[$PROG] airgap verified: lab has NO outbound internet (BLOCKED ✓)"
   else
-    err "[$PROG] ⚠️  AIRGAP FAILURE: lab reached the internet (LEAK). Do not use — check that labnet is internal:true."
+    err "[$PROG] ⚠️  AIRGAP FAILURE: lab reached the internet (LEAK). Do not use - check that labnet is internal:true."
     return 1
   fi
 }

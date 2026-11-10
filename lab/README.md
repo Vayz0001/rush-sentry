@@ -1,4 +1,4 @@
-# lab/ — isolated vulnerable-app range
+# lab/ - isolated vulnerable-app range
 
 > ## ⛔ DO NOT EXPOSE
 > The apps here are **intentionally vulnerable**. They must only ever run on an
@@ -14,9 +14,9 @@ natively (no emulation).
 
 ## Planned targets
 
-- **OWASP Juice Shop** (`bkimminich/juice-shop`) — modern OWASP Top 10
-- **DVWA** (`ghcr.io/digininja/dvwa`) — classic web vulns
-- **VAmPI** (`erev0s/vampi`) — vulnerable REST API
+- **OWASP Juice Shop** (`bkimminich/juice-shop`) - modern OWASP Top 10
+- **DVWA** (`ghcr.io/digininja/dvwa`) - classic web vulns
+- **VAmPI** (`erev0s/vampi`) - vulnerable REST API
 - rotate in: **WebGoat**, **crAPI** (API Top 10)
 
 ## Isolation model (enforced in docker-compose.yml)
@@ -33,7 +33,7 @@ natively (no emulation).
 ## Attacker toolbox (profile: `attacker`, off by default)
 
 The lab ships an optional set of pentest tools as `--profile attacker` services,
-attached **only to the airgapped `labnet`** — they can reach the targets by service
+attached **only to the airgapped `labnet`** - they can reach the targets by service
 name (`http://juice-shop:3000`, `http://dvwa`, `http://vampi:5000`) but have **no
 route to the internet or host**, so the network itself scopes them to the lab.
 

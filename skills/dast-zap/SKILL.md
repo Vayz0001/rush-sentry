@@ -3,9 +3,9 @@ name: dast-zap
 description: Drive OWASP ZAP headlessly (spider + passive + active scan) against a lab target and read the report.
 ---
 
-# OWASP ZAP — full DAST
+# OWASP ZAP - full DAST
 
-> ⚠️ **AUTHORIZATION GATE — read before running.** These tools are for the
+> ⚠️ **AUTHORIZATION GATE - read before running.** These tools are for the
 > **bundled rush-sentry lab** (airgapped, intentionally vulnerable) or a target the
 > user has **explicitly confirmed** they own or are authorized to test (signed
 > engagement / in-scope bug bounty). If the target is not a lab service and the
@@ -21,14 +21,14 @@ when you want thorough coverage of one app.
 ```
 ./bin/toolkit lab up && ./bin/toolkit lab verify   # expect BLOCKED
 ```
-First run pulls the ZAP image (~1.5 GB) — be patient.
+First run pulls the ZAP image (~1.5 GB) - be patient.
 
 ## Steps
 ```
-# baseline (spider + passive) — safe, fast
+# baseline (spider + passive) - safe, fast
 ./bin/toolkit lab attack zap zap-baseline.py -t http://juice-shop:3000
 
-# full active scan — sends attack payloads (lab only!)
+# full active scan - sends attack payloads (lab only!)
 ./bin/toolkit lab attack zap zap-full-scan.py -t http://juice-shop:3000
 ```
 For repeatable scans, drive ZAP's **Automation Framework** with a `plan.yaml`
