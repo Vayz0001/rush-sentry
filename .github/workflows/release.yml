@@ -29,13 +29,18 @@ jobs:
           mv "/tmp/rush-sentry-${v}.tar.gz" .
           sha256sum "rush-sentry-${v}.tar.gz" | tee SHA256SUMS
       - name: attest build provenance
+        id: attest
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: "rush-sentry-*.tar.gz"
+      - name: stage provenance as a release asset
+        env:
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+        run: cp "$BUNDLE" "rush-sentry-${GITHUB_REF_NAME}.intoto.jsonl"
       - name: publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "${GITHUB_REF_NAME}" \
-            rush-sentry-*.tar.gz SHA256SUMS \
+            rush-sentry-*.tar.gz SHA256SUMS rush-sentry-*.intoto.jsonl \
             --title "${GITHUB_REF_NAME}" --generate-notes
