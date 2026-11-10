@@ -12,8 +12,6 @@ rs_parse "$@"
 rs_need_docker
 
 IMG="${RS_IMG_GITLEAKS:-ghcr.io/gitleaks/gitleaks:latest}"
-# shellcheck disable=SC2016  # $schema is a literal JSON key, not a shell var
-EMPTY='{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"gitleaks","informationUri":"https://github.com/gitleaks/gitleaks"}},"results":[]}]}'
 
 TMP_OUT="$(mktemp -d)"
 trap 'rm -rf "$TMP_OUT"' EXIT
@@ -21,28 +19,30 @@ trap 'rm -rf "$TMP_OUT"' EXIT
 conf_args=()
 [[ -f "$TARGET/.gitleaks.toml" ]] && conf_args=(-c /src/.gitleaks.toml)
 
-run_gitleaks() {  # $1 = mode (dir|git), $2 = report filename
+run_gitleaks() {  # $1 = mode (dir|git), $2 = report filename. Returns the
+  # gitleaks exit code; with --exit-code 0 a non-zero return is a real scanner
+  # error (not "secrets found"), so the caller can fail closed instead of hide it.
+  local rc=0
   docker run --rm --network none \
     -v "$TARGET:/src:ro" -v "$TMP_OUT:/out" \
     "$IMG" "$1" /src --no-banner "${conf_args[@]}" \
     --report-format sarif --report-path "/out/$2" --exit-code 0 \
-    >/dev/null 2>&1 || true
+    >/dev/null 2>&1 || rc=$?
+  return "$rc"
 }
 
-# Always scan the working tree.
-run_gitleaks dir dir.sarif
+# Always scan the working tree. Fail closed on a real scanner error.
+run_gitleaks dir dir.sarif || rs_err error "gitleaks dir scan failed (exit $?)" 1
 # Scan commit history when the target is a git repo (unless disabled).
 if [[ -d "$TARGET/.git" && "${RS_GIT_HISTORY:-1}" != "0" ]]; then
-  run_gitleaks git git.sarif
+  run_gitleaks git git.sarif || rs_err error "gitleaks git-history scan failed (exit $?)" 1
 fi
 
 shopt -s nullglob
 files=("$TMP_OUT"/*.sarif)
 
 if [[ ${#files[@]} -eq 0 ]]; then
-  # shellcheck disable=SC2016
-  printf '%s\n' "$EMPTY"
-  exit 0
+  rs_err error "gitleaks ran but produced no SARIF report (unexpected)" 1
 fi
 
 # Merge every pass into one gitleaks run, deduping identical findings

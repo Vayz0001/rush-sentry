@@ -104,6 +104,8 @@ scan_all() {
   err "[$PROG] scan all complete - ran: ${ok[*]:-none}; failed: ${failed[*]:-none}; findings: $total"
   err "[$PROG] combined report: $merged"
   cat "$merged"
+  # Fail closed: a scanner that errored must not look like a clean run to CI.
+  [[ ${#failed[@]} -eq 0 ]] || return 1
 }
 
 LAB_COMPOSE="$ROOT/lab/docker-compose.yml"
