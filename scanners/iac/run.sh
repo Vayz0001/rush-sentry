@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# iac — trivy config scan (IaC / Dockerfile misconfig). SARIF to stdout.
+# iac - trivy config scan (IaC / Dockerfile misconfig). SARIF to stdout.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 source "$ROOT/bin/lib/common.sh"

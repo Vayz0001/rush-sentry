@@ -8,7 +8,7 @@ for things that can actually hurt you now:
   CRITICAL  malicious package (OpenSSF, via OSV MAL- advisories) OR a CVE on the
             CISA KEV catalog (actively exploited in the wild)
   HIGH      EPSS exploit-probability >= threshold (default 0.5)
-  DIGEST    everything else — counted, not pinged
+  DIGEST    everything else - counted, not pinged
 
 Feeds (all free, no key, stdlib urllib):
   - syft        full package inventory (ecosystem/name/version from purls)
@@ -271,18 +271,18 @@ def build_alert(fresh, target):
     crit = [f for f in fresh if f["tier"] == "CRITICAL"]
     high = [f for f in fresh if f["tier"] == "HIGH"]
     digest = [f for f in fresh if f["tier"] == "DIGEST"]
-    lines = [f"📡 **rush-sentry pwn watch** — `{target}`", ""]
+    lines = [f"📡 **rush-sentry pwn watch** - `{target}`", ""]
     if crit:
-        lines.append(f"🔴 **CRITICAL ({len(crit)})** — malware or actively exploited:")
+        lines.append(f"🔴 **CRITICAL ({len(crit)})** - malware or actively exploited:")
         for f in sorted(crit, key=lambda x: x["id"]):
             tag = "☣️ MALICIOUS PACKAGE" if f["malicious"] else "KEV (exploited in the wild)"
             label = f["cve"] or f["id"]
-            lines.append(f"• **{label}** — `{f['pkg']} {f['version']}` — {tag}")
+            lines.append(f"• **{label}** - `{f['pkg']} {f['version']}` - {tag}")
     if high:
         lines.append("")
-        lines.append(f"🟠 **HIGH ({len(high)})** — high exploit probability (EPSS ≥ {EPSS_THRESHOLD}):")
+        lines.append(f"🟠 **HIGH ({len(high)})** - high exploit probability (EPSS ≥ {EPSS_THRESHOLD}):")
         for f in sorted(high, key=lambda x: -(x["epss"] or 0)):
-            lines.append(f"• **{f['cve'] or f['id']}** — `{f['pkg']} {f['version']}` — EPSS {f['epss']:.2f}")
+            lines.append(f"• **{f['cve'] or f['id']}** - `{f['pkg']} {f['version']}` - EPSS {f['epss']:.2f}")
     if digest:
         lines.append("")
         lines.append(f"⚪ _DIGEST: {len(digest)} other new finding(s) below alert threshold._")
@@ -321,7 +321,7 @@ def main():
         if not webhook:
             sys.stderr.write("[notify] no RUSH_SENTRY_WEBHOOK set\n")
             sys.exit(1)
-        ok = post_webhook(webhook, "✅ rush-sentry pwn watch — alerts will arrive here.")
+        ok = post_webhook(webhook, "✅ rush-sentry pwn watch - alerts will arrive here.")
         print("ok" if ok else "failed")
         sys.exit(0 if ok else 1)
 
@@ -350,7 +350,7 @@ def main():
 
     findings = build_findings(hydrated, kev, epss)
     counts = {t: sum(1 for f in findings if f["tier"] == t) for t in TIERS}
-    sys.stderr.write(f"[notify] findings — CRITICAL {counts['CRITICAL']}, "
+    sys.stderr.write(f"[notify] findings - CRITICAL {counts['CRITICAL']}, "
                      f"HIGH {counts['HIGH']}, DIGEST {counts['DIGEST']}\n")
 
     state = {} if args.all else load_state()
@@ -360,7 +360,7 @@ def main():
                "counts": counts, "new_or_escalated": len(fresh)}
 
     if not fresh:
-        sys.stderr.write("[notify] nothing new or escalated — quiet ✓\n")
+        sys.stderr.write("[notify] nothing new or escalated - quiet ✓\n")
         print(json.dumps(summary, indent=2))
         return
 

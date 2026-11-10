@@ -3,9 +3,9 @@ name: nuclei-scan
 description: Run template-based vulnerability/misconfiguration detection against a lab target with nuclei, then triage the findings.
 ---
 
-# nuclei — template DAST
+# nuclei - template DAST
 
-> ⚠️ **AUTHORIZATION GATE — read before running.** These tools are for the
+> ⚠️ **AUTHORIZATION GATE - read before running.** These tools are for the
 > **bundled rush-sentry lab** (airgapped, intentionally vulnerable) or a target the
 > user has **explicitly confirmed** they own or are authorized to test (signed
 > engagement / in-scope bug bounty). If the target is not a lab service and the
@@ -35,7 +35,7 @@ image** (it can't fetch updates). That's fine for lab practice.
 
 ## Reading the output
 Each line = `[template-id] [protocol] [severity] matched-URL`. Treat it as a
-lead, not proof — confirm manually before reporting. Export SARIF/JSON with
+lead, not proof - confirm manually before reporting. Export SARIF/JSON with
 `-sarif-export out.sarif` / `-json-export out.json` to merge with scan findings.
 
 ## Methodology

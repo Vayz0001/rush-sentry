@@ -3,9 +3,9 @@ name: sqli-dvwa
 description: Practice SQL injection against DVWA with sqlmap across security levels (low to impossible).
 ---
 
-# SQL injection — DVWA + sqlmap
+# SQL injection - DVWA + sqlmap
 
-> ⚠️ **AUTHORIZATION GATE — read before running.** These tools are for the
+> ⚠️ **AUTHORIZATION GATE - read before running.** These tools are for the
 > **bundled rush-sentry lab** (airgapped, intentionally vulnerable) or a target the
 > user has **explicitly confirmed** they own or are authorized to test (signed
 > engagement / in-scope bug bounty). If the target is not a lab service and the
@@ -32,7 +32,7 @@ cookies from the browser.
   --cookie="PHPSESSID=<id>; security=low" --batch --dbs
 ```
 Then escalate: `--tables -D dvwa`, `--dump -T users`. Re-run at security
-**impossible** and watch sqlmap fail — that's the lesson (prepared statements).
+**impossible** and watch sqlmap fail - that's the lesson (prepared statements).
 
 ## Reading the output
 sqlmap reports the injection type/point, back-end DBMS, then lets you enumerate

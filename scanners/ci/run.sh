@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# ci — zizmor (GitHub Actions security audit). SARIF to stdout.
+# ci - zizmor (GitHub Actions security audit). SARIF to stdout.
 # Audits .github/workflows for template injection, unpinned actions, over-broad
-# GITHUB_TOKEN permissions, dangerous triggers — a vuln class the other scanners
+# GITHUB_TOKEN permissions, dangerous triggers - a vuln class the other scanners
 # don't cover. Runs --offline so it needs no network. Normalizes the no-workflows
 # and no-findings cases to a valid empty SARIF so the output contract always holds.
 set -euo pipefail

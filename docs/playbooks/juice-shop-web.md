@@ -1,4 +1,4 @@
-# Playbook — OWASP Juice Shop (web)
+# Playbook - OWASP Juice Shop (web)
 
 **Target:** `http://juice-shop:3000` (host: `http://127.0.0.1:3000`)
 **Authorization:** bundled lab only. See docs/METHODOLOGY.md § Scope.

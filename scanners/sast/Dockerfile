@@ -1,6 +1,6 @@
 # Opengrep image. Opengrep publishes no official container, so we build a small
 # one from the upstream install script. Opengrep is an LGPL-2.1 fork of the
-# Semgrep OSS engine — same rule format and SARIF output, but no account, no
+# Semgrep OSS engine - same rule format and SARIF output, but no account, no
 # telemetry, and none of the Semgrep-registry ToS attached to the engine itself.
 #
 # NOTE (rules licensing): registry rulesets fetched via `--config p/...` remain
@@ -10,7 +10,7 @@
 #
 # Runs as a non-root user (uid 1000) so the toolkit's own IaC scan stays clean;
 # output is written to a bind-mounted /out owned by the invoking user (also 1000).
-FROM python:3.12-slim
+FROM python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends curl ca-certificates git \

@@ -1,5 +1,5 @@
 name: scorecard
-# OpenSSF Scorecard — repo security-posture score + badge.
+# OpenSSF Scorecard - repo security-posture score + badge.
 # Fully effective once the repo is PUBLIC (publish_results needs a public repo);
 # the guard below skips it while private so it doesn't show as failed.
 on:

@@ -1,14 +1,14 @@
-# rush-sentry lab — isolated, intentionally-vulnerable web targets.
+# rush-sentry lab - isolated, intentionally-vulnerable web targets.
 # ⛔ DO NOT EXPOSE.
 #
 # Design: the vulnerable targets sit on `labnet` (internal:true) with NO outbound
-# route — a reverse shell/payload in a target cannot phone home or pivot. A thin
+# route - a reverse shell/payload in a target cannot phone home or pivot. A thin
 # nginx `gateway` straddles labnet + a normal `edge` network and is the ONLY way
 # the host reaches the targets (loopback-published). The gateway runs no
 # vulnerable code. Verify after every up:  ./bin/toolkit lab verify  (-> BLOCKED)
 #
 # The ATTACKER TOOLBOX (profile "attacker", off by default) attaches ONLY to
-# labnet — the tools can reach the targets by service name but have NO route to
+# labnet - the tools can reach the targets by service name but have NO route to
 # the internet or host, so the airgap itself scopes them to the lab. Authorized
 # / defensive use only. Run via:  ./bin/toolkit lab attack <tool> [args...]
 
@@ -39,7 +39,7 @@ services:
     restart: unless-stopped
     depends_on: [juice-shop, dvwa, vampi]
 
-  juice-shop:               # OWASP Juice Shop — modern OWASP Top 10
+  juice-shop:               # OWASP Juice Shop - modern OWASP Top 10
     image: bkimminich/juice-shop:latest
     networks: [labnet]
     cap_drop: ["ALL"]
@@ -58,7 +58,7 @@ services:
     cpus: 1.0
     restart: unless-stopped
 
-  vampi:                    # VAmPI — vulnerable REST API (BOLA/auth practice)
+  vampi:                    # VAmPI - vulnerable REST API (BOLA/auth practice)
     image: erev0s/vampi:latest
     networks: [labnet]
     cap_drop: ["ALL"]
@@ -72,7 +72,7 @@ services:
   # Off by default. labnet-only (airgapped). Run-on-demand, not long-running.
   # Reach targets by service name: http://juice-shop:3000, http://dvwa,
   # http://vampi:5000. Official upstream images except ffuf/sqlmap (community,
-  # pinned by tag — see lab/README.md). Invoke: ./bin/toolkit lab attack <tool> …
+  # pinned by tag - see lab/README.md). Invoke: ./bin/toolkit lab attack <tool> …
 
   nuclei:                   # template-based DAST / CVE + misconfig scanner (MIT)
     image: projectdiscovery/nuclei:latest

@@ -10,7 +10,7 @@ Two additions that make findings far more useful in a code-scanning UI:
    >=9.0 critical, 7.0-8.9 high, 4.0-6.9 medium, 0.1-3.9 low.
 
 2. partialFingerprints.primaryLocationLineHash: a stable per-finding hash so the
-   platform can dedup across runs and track a finding as code moves — which is
+   platform can dedup across runs and track a finding as code moves - which is
    what makes "only new findings fail the build" reliable. Important here because
    we merge several tools into one combined.sarif.
 

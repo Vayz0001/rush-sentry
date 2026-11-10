@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# sbom — syft (Software Bill of Materials). SPDX-JSON to stdout.
+# sbom - syft (Software Bill of Materials). SPDX-JSON to stdout.
 # NOTE: an SBOM is an inventory artifact, not SARIF findings, so this is a
-# standalone capability — `scan all` does not merge it into combined.sarif.
+# standalone capability - `scan all` does not merge it into combined.sarif.
 # It answers "what is actually in this project?" (deps, versions, licenses),
 # which is increasingly required (US EO 14028, EU CRA) and feeds vuln tooling.
 set -euo pipefail

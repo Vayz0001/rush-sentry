@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# common.sh — shared helpers for scanner wrappers. Sourced, not executed.
+# common.sh - shared helpers for scanner wrappers. Sourced, not executed.
 set -euo pipefail
 
 # Emit a JSON error object on stderr (agent-parseable) and exit with a code.

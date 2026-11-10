@@ -1,4 +1,4 @@
-# AGENTS.md — how an AI agent should drive rush-sentry
+# AGENTS.md - how an AI agent should drive rush-sentry
 
 This repo is a **bring-your-own-CLI** security toolkit. You (the agent) are the
 reasoning layer; the repo gives you deterministic tools, an isolated lab,
@@ -6,7 +6,7 @@ notifications, and skill packs. This file is the open
 [AGENTS.md](https://agents.md) standard and is read by Codex, omp, Gemini/
 Antigravity, and recent Claude Code; `CLAUDE.md` and `GEMINI.md` re-import it.
 
-## ⚠️ Authorization policy — read first
+## ⚠️ Authorization policy - read first
 
 - **Only** operate against: (a) code in this repo / repos the user owns,
   (b) the deliberately-vulnerable targets in `lab/`, or (c) external systems the
@@ -37,7 +37,7 @@ Antigravity, and recent Claude Code; `CLAUDE.md` and `GEMINI.md` re-import it.
 - stdout = machine channel (JSON / SARIF when not a TTY); stderr = human/errors.
 - Findings are **SARIF v2.1.0**; raw per-tool JSON is also available.
 - Exit codes: `0` ok · `1` error · `2` auth · `3` input/validation · `4` confirm-required.
-- The contract is frozen after 1.0 — additive changes only.
+- The contract is frozen after 1.0 - additive changes only.
 
 ## Skills
 
